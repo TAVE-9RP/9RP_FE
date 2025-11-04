@@ -12,7 +12,7 @@ export default function Header({ title }: HeaderProps) {
         <img src={logo} alt="NexERP 로고" className="h-[40px] w-[171px] object-contain" />
       </div>
 
-      <h1 className="font-pretendard mt-0 text-center text-[32px] font-bold leading-normal text-black">
+      <h1 className="font-pretendard mt-0 whitespace-nowrap text-center text-[32px] font-bold leading-normal text-black">
         {title}
       </h1>
     </header>
