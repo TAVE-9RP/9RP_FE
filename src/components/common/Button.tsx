@@ -2,7 +2,7 @@ import clsx from 'clsx';
 
 type ButtonProps = {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'active';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   className?: string;
@@ -19,15 +19,14 @@ const Button = ({
   const baseStyles = 'transition-all flex items-center justify-center rounded-md font-[Pretendard]';
 
   const variantStyles = {
-    primary:
-      'bg-white text-black border border-[#BEBEBE] ' +
-      'shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:bg-gray-50 font-medium',
-    secondary: 'bg-[#E8E8E8] hover:bg-[#DCDCDC] text-black font-semibold rounded-[30px]',
+    primary: 'bg-white text-gray-600 border border-gray-600 ' + 'hover:bg-gray-50 font-bold',
+    secondary: 'bg-gray-300 hover:bg-[#DCDCDC] text-white font-bold rounded-[10px]',
+    active: 'bg-blue-600 text-white hover:bg-blue-700 font-bold rounded-[10px]',
   };
 
   const sizeStyles = {
     sm: 'text-sm px-4 py-2',
-    md: 'text-base px-[32px] py-[10px]',
+    md: 'text-[24px] px-[32px] py-[10px]',
     lg: 'text-lg px-8 py-3',
   };
 
