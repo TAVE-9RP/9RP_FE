@@ -6,7 +6,17 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, 'src'), // src 폴더를 @로 매핑
+    },
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://nexerp.site',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
     },
   },
 });

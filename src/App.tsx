@@ -8,20 +8,28 @@ import EmployeeRegisterSecondPage from './pages/signup/EmployeeRegisterSecondPag
 import EmployeeRegisterFourthPage from './pages/signup/EmployeeRegisterFourthPage';
 import SignupSuccessPage from './pages/signup/SignupSuccesspage';
 import SignupFailurePage from './pages/signup/SignupFailurePage';
+import TestPage from './pages/test/test';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Main />} />
-      <Route path="signup" element={<SignupStartPage />} />
-      <Route path="companysignup" element={<CompanyRegisterPage />} />
-      <Route path="companysignup/step2" element={<CompanyRegisterSecondPage />} />
-      <Route path="employeesignup" element={<EmployeeRegisterPage />} />
-      <Route path="employeesignup/step2" element={<EmployeeRegisterSecondPage />} />
-      <Route path="employeesignup/step4" element={<EmployeeRegisterFourthPage />} />
-      <Route path="signupsuccess" element={<SignupSuccessPage />} />
-      <Route path="signupfailure" element={<SignupFailurePage />} />
-    </Routes>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="signup" element={<SignupStartPage />} />
+        <Route path="companysignup" element={<CompanyRegisterPage />} />
+        <Route path="companysignup/step2" element={<CompanyRegisterSecondPage />} />
+        <Route path="employeesignup" element={<EmployeeRegisterPage />} />
+        <Route path="employeesignup/step2" element={<EmployeeRegisterSecondPage />} />
+        <Route path="employeesignup/step4" element={<EmployeeRegisterFourthPage />} />
+        <Route path="signupsuccess" element={<SignupSuccessPage />} />
+        <Route path="signupfailure" element={<SignupFailurePage />} />
+
+        <Route path="test" element={<TestPage />} />
+      </Routes>
+    </QueryClientProvider>
   );
 }
 
