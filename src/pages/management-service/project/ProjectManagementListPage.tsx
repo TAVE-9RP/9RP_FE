@@ -1,0 +1,216 @@
+import React, { useState, useEffect } from 'react';
+import SearchBar from '../../../components/common/SearchBar';
+import SideBar from '../../../components/common/SideBar';
+import ProjectStatusButton from '../../../components/common/ProjectStatusButton';
+import ProjectListTable from '../../../components/common/ProjectListTable';
+import { useNavigate } from 'react-router-dom';
+
+interface Project {
+  id: number;
+  projectNumber: string;
+  projectTitle: string;
+  projectDescription: string;
+  client: string;
+  creationDate: string;
+  manager: string;
+  status: 'IN_PROGRESS' | 'PENDING' | 'COMPLETED';
+}
+
+const MOCK_PROJECT_LIST: Project[] = [
+  {
+    id: 1,
+    projectNumber: 'SYS-01-001',
+    projectTitle: '업무명입니다.',
+    projectDescription: '거래처입니다.',
+    client: '위치입니다.',
+    creationDate: '2025-10-25',
+    manager: '박하은',
+    status: 'IN_PROGRESS',
+  },
+  {
+    id: 2,
+    projectNumber: 'SYS-01-002',
+    projectTitle: '업무명입니다.',
+    projectDescription: '거래처입니다.',
+    client: '위치입니다.',
+    creationDate: '2025-10-25',
+    manager: '카피바라',
+    status: 'IN_PROGRESS',
+  },
+  {
+    id: 3,
+    projectNumber: 'SYS-01-003',
+    projectTitle: '업무명입니다.',
+    projectDescription: '거래처입니다.',
+    client: '위치입니다.',
+    creationDate: '2025-10-25',
+    manager: '타코',
+    status: 'PENDING',
+  },
+  {
+    id: 4,
+    projectNumber: 'SYS-01-004',
+    projectTitle: '업무명입니다.',
+    projectDescription: '거래처입니다.',
+    client: '위치입니다.',
+    creationDate: '2025-10-25',
+    manager: '백구',
+    status: 'COMPLETED',
+  },
+  {
+    id: 5,
+    projectNumber: 'SYS-01-005',
+    projectTitle: '업무명입니다.',
+    projectDescription: '거래처입니다.',
+    client: '위치입니다.',
+    creationDate: '2025-10-25',
+    manager: '짱구',
+    status: 'IN_PROGRESS',
+  },
+  {
+    id: 6,
+    projectNumber: 'SYS-01-006',
+    projectTitle: '업무명입니다.',
+    projectDescription: '거래처입니다.',
+    client: '위치입니다.',
+    creationDate: '2025-10-25',
+    manager: '홍길동',
+    status: 'PENDING',
+  },
+];
+
+const getStatusCounts = () => ({
+  IN_PROGRESS: MOCK_PROJECT_LIST.filter((p) => p.status === 'IN_PROGRESS').length,
+  PENDING: MOCK_PROJECT_LIST.filter((p) => p.status === 'PENDING').length,
+  COMPLETED: MOCK_PROJECT_LIST.filter((p) => p.status === 'COMPLETED').length,
+});
+
+const statusCounts = getStatusCounts();
+
+const INITIAL_STATUS_DATA = [
+  { status: 'IN_PROGRESS', label: '진행중', count: statusCounts.IN_PROGRESS },
+  { status: 'PENDING', label: '미진행', count: statusCounts.PENDING },
+  { status: 'COMPLETED', label: '완료', count: statusCounts.COMPLETED },
+];
+
+const pageTitleStyle = {
+  color: '#000',
+  fontFamily: 'Pretendard',
+  fontSize: '24px',
+  fontStyle: 'normal',
+  fontWeight: 700,
+  lineHeight: 'normal',
+};
+
+export default function ProjectManagementListPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeStatus, setActiveStatus] = useState<string>('IN_PROGRESS');
+  const [projectList, setProjectList] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredProjectList = projectList.filter(
+    (project) =>
+      project.projectNumber.includes(searchTerm) || project.projectTitle.includes(searchTerm),
+  );
+
+  const fetchProjectsByStatus = (status: string) => {
+    setIsLoading(true);
+
+    // API 호출 모방
+    setTimeout(() => {
+      const filteredList = MOCK_PROJECT_LIST.filter((project) => project.status === status);
+      setProjectList(filteredList);
+      setIsLoading(false);
+    }, 500);
+  };
+
+  const handleStatusClick = (status: string) => {
+    if (activeStatus === status) return;
+    setActiveStatus(status);
+    fetchProjectsByStatus(status);
+  };
+
+  const navigate = useNavigate();
+
+  const handleCreateProjectClick = () => {
+    navigate('/project-create');
+    console.log('프로젝트 생성 페이지로 이동');
+  };
+
+  useEffect(() => {
+    fetchProjectsByStatus(activeStatus);
+  }, [activeStatus]);
+
+  return (
+    <div className="flex min-h-screen w-full">
+      <SideBar />
+
+      <main className="flex-1 bg-white">
+        <div className="mt-5 pl-[70px] pr-10 pt-10">
+          <h1 style={pageTitleStyle}>전체 프로젝트 관리</h1>
+
+          <div className="mt-12 w-[1040px]">
+            <SearchBar
+              placeholder="프로젝트 넘버 또는 프로젝트 제목을 입력하세요."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+
+          <div className="mb-6 mt-5 flex w-[1040px] items-center justify-between">
+            <div className="flex gap-4">
+              {INITIAL_STATUS_DATA.map((item) => (
+                <ProjectStatusButton
+                  key={item.status}
+                  label={item.label}
+                  count={item.count}
+                  isActive={activeStatus === item.status}
+                  onClick={() => handleStatusClick(item.status)}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={handleCreateProjectClick}
+              className="flex items-center gap-[5px] bg-mainColor-blue600 transition-colors"
+              style={{
+                height: '40px',
+                width: '151px',
+                borderRadius: '10px',
+              }}
+            >
+              <img
+                src="src/assets/add.png"
+                alt="Add Icon"
+                width={26}
+                height={26}
+                className="ml-[10px]"
+              />
+
+              <span
+                style={{
+                  color: '#fff',
+                  fontFamily: 'Pretendard',
+                  fontSize: '17px',
+                  fontWeight: 700,
+                  fontStyle: 'normal',
+                  marginRight: '10px',
+                }}
+              >
+                프로젝트 생성
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div className="pl-[70px] pr-10">
+          <ProjectListTable data={filteredProjectList} isLoading={isLoading} />
+        </div>
+      </main>
+    </div>
+  );
+}

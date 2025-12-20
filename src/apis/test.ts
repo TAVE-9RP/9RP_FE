@@ -12,7 +12,7 @@ import type {
 export const postTestValidation = async (
   payload: TestValidationRequest,
 ): Promise<TestValidationResponse> => {
-  const response = await axios.post('/api/test/validation', payload, {
+  const response = await axios.post('https://nexerp.site/test/validation', payload, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -22,28 +22,31 @@ export const postTestValidation = async (
 };
 
 export const getTest = async (): Promise<TestGetResponse> => {
-  const response = await axios.get('/api/test');
+  const response = await axios.get('https://nexerp.site/test');
   return response.data;
 };
 
 export const getUnexpectedError = async (): Promise<TestUnexpectedErrorResponse> => {
-  const response = await axios.get('/api/test/unexpected-error');
+  const response = await axios.get('https://nexerp.site/test/unexpected-error');
   return response.data;
 };
 
 export const getSystemError = async (): Promise<TestSystemErrorResponse> => {
-  const response = await axios.get('/api/test/system-error');
+  const response = await axios.get('https://nexerp.site/test/system-error');
   return response.data;
 };
 
 export const getErrorByUserId = async (userId: string): Promise<TestErrorResponse> => {
-  const response = await axios.get(`/api/test/error/${userId}`);
+  const response = await axios.get(`https://nexerp.site/test/error/${userId}`);
   return response.data;
 };
 
 export const getCustomError = async (count: number): Promise<TestCustomErrorResponse> => {
-  const { data } = await axios.get<TestCustomErrorResponse>('/api/test/custom-error', {
-    params: { count },
-  });
+  const { data } = await axios.get<TestCustomErrorResponse>(
+    'https://nexerp.site/test/custom-error',
+    {
+      params: { count },
+    },
+  );
   return data;
 };

@@ -9,7 +9,7 @@ export const useCustomError = (
   return useQuery<TestCustomErrorResponse, unknown, TestCustomErrorResponse>({
     queryKey: ['customError', count],
     queryFn: () => getCustomError(count),
-    enabled: false, // 수동 호출
+    enabled: false,
     ...options,
   });
 };

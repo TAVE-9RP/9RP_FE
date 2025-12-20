@@ -123,7 +123,7 @@ export default function CompanyRegisterSecondPage() {
             type="button"
             variant="primary"
             size="md"
-            onClick={handlePrevStep} // ✅ 이동 기능 연결
+            onClick={handlePrevStep}
             className="h-[70px] w-[252px] rounded-[10px] border-[#63656C] px-[50px] py-[17px]"
           >
             이전 단계
