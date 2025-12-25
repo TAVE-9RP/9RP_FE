@@ -1,6 +1,10 @@
 import axios from 'axios';
 import type { LoginRequest, LoginResponse, MemberSignupRequest, MemberSignupResponse } from '../types/member';
-import type { CompanyRegisterRequest, CompanyRegisterResponse } from '../types/company';
+import type {
+  CompanyRegisterRequest,
+  CompanyRegisterResponse,
+  CompanySearchResponse,
+} from '../types/company';
 
 const BASE_URL = 'https://nexerp.site';
 
@@ -36,6 +40,16 @@ export const postMemberSignup = async (payload: MemberSignupRequest): Promise<Me
   const response = await axios.post(`${BASE_URL}/member/signup`, payload, {
     headers: {
       'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data;
+};
+
+export const getCompanies = async (keyword: string = ''): Promise<CompanySearchResponse> => {
+  const response = await axios.get(`${BASE_URL}/companies`, {
+    params: {
+      keyword,
     },
   });
 
