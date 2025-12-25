@@ -3,6 +3,7 @@ import Header from '@/components/signup/Header';
 import { InputField } from '@/components/signup/InputField';
 import Button from '@/components/common/Button';
 import { useNavigate } from 'react-router-dom';
+import { postLogin } from '@/apis/member';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function LoginPage() {
   });
 
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
@@ -59,7 +61,7 @@ export default function LoginPage() {
     setIsFormValid(isValid);
   }, [formData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isFormValid) {
@@ -67,10 +69,33 @@ export default function LoginPage() {
       return;
     }
 
-    console.log('로그인 요청 데이터:', formData);
-
-    // 로그인 API 를 여기에 붙일 예정
-    navigate('/dashboard'); // 로그인 성공 시 이동
+    setIsLoading(true);
+    try {
+      const response = await postLogin({
+        loginId: formData.userId,
+        password: formData.password,
+      });
+      console.log('로그인 성공:', response);
+      // Access Token은 메모리에 저장됨
+      // Refresh Token은 서버에서 HTTP Only Cookie로 자동 저장됨
+      navigate('/dashboard');
+    } catch (error: any) {
+      console.error('로그인 실패:', error);
+      
+      // axios 에러 응답에서 에러 정보 추출
+      const errorMessage = error?.response?.data?.message || '';
+      
+      // 승인 대기 중인 경우
+      if (errorMessage.includes('승인')) {
+        alert('승인 대기 중입니다. 관리자 승인 후 로그인해주세요.');
+      } 
+      // 아이디와 비밀번호 확인해야 하는 경우
+      else {
+        alert('아이디와 비밀번호를 확인해주세요.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -109,10 +134,10 @@ export default function LoginPage() {
             type="submit"
             variant={isFormValid ? 'active' : 'secondary'}
             size="md"
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             className="h-[70px] w-full rounded-[10px] px-[50px] py-[17px] text-black"
           >
-            로그인
+            {isLoading ? '로그인 중...' : '로그인'}
           </Button>
         </div>
       </form>
