@@ -11,6 +11,11 @@ export default function CompanyRegisterSecondPage() {
   // 이전 페이지에서 전달받은 companyId
   const companyId = location.state?.companyId as number | undefined;
 
+  useEffect(() => {
+    console.log('받은 companyId:', companyId);
+    console.log('location.state:', location.state);
+  }, [companyId, location.state]);
+
   const [formData, setFormData] = useState({
     userId: '',
     email: '',

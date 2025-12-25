@@ -15,11 +15,19 @@ export const postLogin = async (payload: LoginRequest): Promise<LoginResponse> =
 };
 
 export const postCompany = async (payload: CompanyRegisterRequest): Promise<CompanyRegisterResponse> => {
+  console.log('=== postCompany 함수 실행 ===');
+  console.log('요청 URL:', `${BASE_URL}/companies`);
+  console.log('요청 payload:', payload);
+  
   const response = await axios.post(`${BASE_URL}/companies`, payload, {
     headers: {
       'Content-Type': 'application/json',
     },
   });
+
+  console.log('=== postCompany 응답 ===');
+  console.log('응답 status:', response.status);
+  console.log('응답 data:', response.data);
 
   return response.data;
 };
