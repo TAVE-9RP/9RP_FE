@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import Main from '@/pages/main/MainPage';
 import SignupStartPage from './pages/signup/SignupStartPage';
-import CompanyRegisterPage from './pages/signup/CompanyRegisterPage';
-import CompanyRegisterSecondPage from './pages/signup/CompanyRegisterSecondPage';
+import CompanyRegisterPage from './pages/signup/CompanyRegisterSecondPage';
+import CompanyRegisterSecondPage from './pages/signup/CompanyRegisterPage';
 import EmployeeRegisterPage from './pages/signup/EmployeeRegisterPage';
 import EmployeeRegisterSecondPage from './pages/signup/EmployeeRegisterSecondPage';
 import EmployeeRegisterFourthPage from './pages/signup/EmployeeRegisterFourthPage';
