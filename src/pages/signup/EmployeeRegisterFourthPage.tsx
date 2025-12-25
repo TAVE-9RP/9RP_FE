@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/signup/Header';
 import { InputField } from '@/components/signup/InputField';
 import Button from '@/components/common/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import defaultLogoImg from '@/assets/logoimg.png';
 
 // 부서 옵션 (표시명: 서버값)
@@ -22,6 +22,23 @@ const POSITION_OPTIONS = [
 
 export default function EmployeeRegisterFourthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 이전 페이지에서 전달받은 데이터
+  const { companyId, userId, email, password } = (location.state as {
+    companyId?: number;
+    userId?: string;
+    email?: string;
+    password?: string;
+  }) || {};
+
+  useEffect(() => {
+    console.log('=== EmployeeRegisterFourthPage에서 받은 데이터 ===');
+    console.log('companyId:', companyId);
+    console.log('userId:', userId);
+    console.log('email:', email);
+    console.log('password:', password);
+  }, [companyId, userId, email, password]);
 
   const [formData, setFormData] = useState({
     department: '', // 서버에 보낼 값 (LOGISTICS, INVENTORY)
@@ -153,7 +170,7 @@ export default function EmployeeRegisterFourthPage() {
           onClick={() => navigate('/employeesignup/step5')}
           className="h-[70px] w-[252px] rounded-[10px] px-[50px] py-[17px] text-black"
         >
-          다음
+          가입 요청
         </Button>
       </div>
     </div>
