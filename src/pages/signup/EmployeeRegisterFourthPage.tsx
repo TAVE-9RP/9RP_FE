@@ -3,6 +3,7 @@ import Header from '@/components/signup/Header';
 import { InputField } from '@/components/signup/InputField';
 import Button from '@/components/common/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { postMemberSignup } from '@/apis/apiConnection';
 import defaultLogoImg from '@/assets/logoimg.png';
 
 // 부서 옵션 (표시명: 서버값)
@@ -52,6 +53,7 @@ export default function EmployeeRegisterFourthPage() {
   });
 
   const [image, setImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -89,6 +91,60 @@ export default function EmployeeRegisterFourthPage() {
 
   const openFileDialog = () => {
     document.getElementById('imageUploadInput')?.click();
+  };
+
+  const handleSignup = async () => {
+    if (!formData.department || !formData.position) {
+      alert('부서와 직급을 선택해주세요.');
+      return;
+    }
+
+    if (!companyId || !userId || !email || !password) {
+      alert('필수 정보가 누락되었습니다. 이전 단계로 돌아가주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const requestData = {
+        loginId: userId,
+        password: password,
+        name: userId, // loginId와 동일
+        email: email,
+        department: formData.department as 'LOGISTICS' | 'INVENTORY',
+        position: formData.position as
+          | 'INTERN'
+          | 'ASSISTANT_MANAGER'
+          | 'MANAGER'
+          | 'SENIOR_MANAGER'
+          | 'DEPARTMENT_HEAD',
+        companyId: String(companyId),
+      };
+
+      console.log('=== 회원가입 API 요청 ===');
+      console.log('요청 데이터:', requestData);
+
+      const response = await postMemberSignup(requestData);
+
+      console.log('=== 회원가입 API 응답 ===');
+      console.log('응답:', response);
+
+      if (response.isSuccess) {
+        navigate('/signupsuccess', {
+          state: {
+            name: userId, // loginId를 name으로 전달
+          },
+        });
+      } else {
+        alert(response.message || '가입 요청에 실패했습니다.');
+      }
+    } catch (error: any) {
+      console.error('가입 요청 실패:', error);
+      const errorMessage = error?.response?.data?.message || '가입 요청에 실패했습니다.';
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -166,11 +222,11 @@ export default function EmployeeRegisterFourthPage() {
           type="button"
           variant={formData.department && formData.position ? 'active' : 'secondary'}
           size="md"
-          disabled={!formData.department || !formData.position}
-          onClick={() => navigate('/employeesignup/step5')}
+          disabled={!formData.department || !formData.position || isLoading}
+          onClick={handleSignup}
           className="h-[70px] w-[252px] rounded-[10px] px-[50px] py-[17px] text-black"
         >
-          가입 요청
+          {isLoading ? '요청 중...' : '가입 요청'}
         </Button>
       </div>
     </div>
