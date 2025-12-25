@@ -3,6 +3,7 @@ import { InputField } from '@/components/signup/InputField';
 import Header from '@/components/signup/Header';
 import Button from '@/components/common/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { postMemberSignup } from '@/apis/apiConnection';
 
 export default function CompanyRegisterSecondPage() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function CompanyRegisterSecondPage() {
   });
 
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -76,7 +78,7 @@ export default function CompanyRegisterSecondPage() {
     setIsFormValid(isValid);
   }, [formData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isFormValid) {
@@ -84,9 +86,44 @@ export default function CompanyRegisterSecondPage() {
       return;
     }
 
-    console.log('폼 데이터 제출:', formData);
-    // 회원가입 성공 시, 로그인 페이지로 이동
-    navigate('/login');
+    if (!companyId) {
+      alert('회사 정보가 없습니다. 이전 단계로 돌아가주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const requestData = {
+        loginId: formData.userId,
+        password: formData.password,
+        name: formData.userId, // loginId와 동일
+        email: formData.email,
+        department: 'MANAGEMENT' as const,
+        position: 'OWNER' as const,
+        companyId: String(companyId), // number를 string으로 변환
+      };
+
+      console.log('=== 회원가입 API 요청 ===');
+      console.log('요청 데이터:', requestData);
+
+      const response = await postMemberSignup(requestData);
+
+      console.log('=== 회원가입 API 응답 ===');
+      console.log('응답:', response);
+
+      if (response.isSuccess) {
+        alert('회원가입이 완료되었습니다.');
+        navigate('/login');
+      } else {
+        alert(response.message || '회원가입에 실패했습니다.');
+      }
+    } catch (error: any) {
+      console.error('회원가입 실패:', error);
+      const errorMessage = error?.response?.data?.message || '회원가입에 실패했습니다.';
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -159,10 +196,10 @@ export default function CompanyRegisterSecondPage() {
             type="submit"
             variant={isFormValid ? 'active' : 'secondary'}
             size="md"
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             className="h-[70px] w-[252px] rounded-[10px] px-[50px] py-[17px] text-black"
           >
-            가입 완료
+            {isLoading ? '가입 중...' : '가입 완료'}
           </Button>
         </div>
       </form>
