@@ -78,7 +78,8 @@ export default function LoginPage() {
       console.log('로그인 성공:', response);
       // Access Token은 메모리에 저장됨
       // Refresh Token은 서버에서 HTTP Only Cookie로 자동 저장됨
-      navigate('/dashboard');
+      // ----------------분기 필요----------------
+      navigate('/dashboard'); 
     } catch (error: any) {
       console.error('로그인 실패:', error);
       
