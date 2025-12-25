@@ -1,10 +1,14 @@
 import Header from '@/components/signup/Header';
 import checkmark from '@/assets/Checkmark in circle.png';
 import Button from '@/components/common/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function SignupSuccessPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 이전 페이지에서 전달받은 name (loginId)
+  const name = (location.state as { name?: string })?.name || '회원';
 
   return (
     <div className="flex flex-col items-center">
@@ -14,7 +18,7 @@ export default function SignupSuccessPage() {
         className="font-pretendard mt-[80px] text-center text-[32px] font-bold leading-[100%] text-black"
         style={{ letterSpacing: '0%' }}
       >
-        <span className="text-blue-600">홍길동</span>님의 가입 요청이 완료되었습니다.
+        <span className="text-blue-600">{name}</span>님의 가입 요청이 완료되었습니다.
       </h1>
 
       <p className="font-pretendard mt-[22px] text-center text-[19px] font-normal leading-normal text-gray-600">

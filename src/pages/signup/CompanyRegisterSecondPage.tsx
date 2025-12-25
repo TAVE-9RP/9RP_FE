@@ -2,44 +2,83 @@ import React, { useState, useEffect } from 'react';
 import { InputField } from '@/components/signup/InputField';
 import Header from '@/components/signup/Header';
 import Button from '@/components/common/Button';
-import addCircle from '@/assets/add-circle.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { postMemberSignup } from '@/apis/apiConnection';
 
 export default function CompanyRegisterSecondPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 이전 페이지에서 전달받은 companyId
+  const companyId = location.state?.companyId as number | undefined;
+
+  useEffect(() => {
+    console.log('받은 companyId:', companyId);
+    console.log('location.state:', location.state);
+  }, [companyId, location.state]);
 
   const [formData, setFormData] = useState({
-    companyName: '',
-    businessType: '',
-    companyDescription: '',
-    companyLogo: null as File | null,
+    userId: '',
+    email: '',
+    password: '',
+    passwordConfirm: '',
+  });
+
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+    passwordConfirm: '',
   });
 
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    validateField(name, value);
   };
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setFormData((prev) => ({
+  const validateField = (name: string, value: string) => {
+    let errorMsg = '';
+
+    switch (name) {
+      case 'email':
+        if (!emailRegex.test(value)) errorMsg = '올바른 이메일 형식이 아닙니다.';
+        break;
+      case 'password':
+        if (!passwordRegex.test(value)) errorMsg = '영문과 숫자를 포함한 8자 이상이어야 합니다.';
+        break;
+      case 'passwordConfirm':
+        if (value !== formData.password) errorMsg = '비밀번호가 일치하지 않습니다.';
+        break;
+    }
+
+    setErrors((prev) => ({
       ...prev,
-      companyLogo: file,
+      [name]: errorMsg,
     }));
   };
 
   useEffect(() => {
-    const isValid = formData.companyName.trim() !== '' && formData.businessType.trim() !== '';
+    const isValid =
+      formData.userId.trim() !== '' &&
+      emailRegex.test(formData.email) &&
+      passwordRegex.test(formData.password) &&
+      formData.password === formData.passwordConfirm;
+
     setIsFormValid(isValid);
   }, [formData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isFormValid) {
@@ -47,11 +86,44 @@ export default function CompanyRegisterSecondPage() {
       return;
     }
 
-    console.log('회사 정보 입력 완료:', formData);
-  };
+    if (!companyId) {
+      alert('회사 정보가 없습니다. 이전 단계로 돌아가주세요.');
+      return;
+    }
 
-  const handlePrevStep = () => {
-    navigate('/companysignup');
+    setIsLoading(true);
+    try {
+      const requestData = {
+        loginId: formData.userId,
+        password: formData.password,
+        name: formData.userId, // loginId와 동일
+        email: formData.email,
+        department: 'MANAGEMENT' as const,
+        position: 'OWNER' as const,
+        companyId: String(companyId), // number를 string으로 변환
+      };
+
+      console.log('=== 회원가입 API 요청 ===');
+      console.log('요청 데이터:', requestData);
+
+      const response = await postMemberSignup(requestData);
+
+      console.log('=== 회원가입 API 응답 ===');
+      console.log('응답:', response);
+
+      if (response.isSuccess) {
+        alert('회원가입이 완료되었습니다.');
+        navigate('/login');
+      } else {
+        alert(response.message || '회원가입에 실패했습니다.');
+      }
+    } catch (error: any) {
+      console.error('회원가입 실패:', error);
+      const errorMessage = error?.response?.data?.message || '회원가입에 실패했습니다.';
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -60,70 +132,61 @@ export default function CompanyRegisterSecondPage() {
 
       <form onSubmit={handleSubmit} className="mt-[49px] flex w-full flex-col gap-[20px]">
         <InputField
-          label="회사명"
-          name="companyName"
-          placeholder="회사명을 입력하세요."
+          label="아이디"
+          name="userId"
+          placeholder="시스템 내에서 사용할 아이디를 입력하세요."
           type="text"
-          value={formData.companyName}
+          value={formData.userId}
           onChange={handleChange}
         />
 
-        <InputField
-          label="업종"
-          name="businessType"
-          placeholder="업종을 입력하세요."
-          type="text"
-          value={formData.businessType}
-          onChange={handleChange}
-        />
-
-        <InputField
-          label="회사 소개"
-          name="companyDescription"
-          placeholder="회사 소개를 입력하세요. (선택)"
-          type="text"
-          value={formData.companyDescription}
-          onChange={handleChange}
-        />
-
-        <div className="flex flex-col gap-[10px]">
-          <label
-            htmlFor="logoUpload"
-            className="font-pretendard text-[19px] font-bold leading-normal text-black"
-          >
-            회사 로고
-          </label>
-
-          <label
-            htmlFor="logoUpload"
-            className="flex h-[103px] w-[535px] cursor-pointer flex-col items-center justify-center gap-[10px] rounded-[10px] bg-[#F7F8F9]"
-          >
-            <img
-              src={addCircle}
-              alt="파일 추가 아이콘"
-              className="h-[32px] w-[32px] object-contain"
-            />
-            <span className="font-pretendard text-[19px] font-normal leading-normal text-[#63656C]">
-              파일을 선택해주세요
-            </span>
-          </label>
-
-          <input
-            id="logoUpload"
-            type="file"
-            accept="image/*"
-            onChange={handleLogoUpload}
-            className="hidden"
+        <div>
+          <InputField
+            label="이메일"
+            name="email"
+            placeholder="사용할 이메일을 입력하세요."
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            isError={!!errors.email}
           />
+          {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
         </div>
 
-        {/* 버튼 */}
+        <div>
+          <InputField
+            label="비밀번호"
+            name="password"
+            placeholder="영문, 숫자가 모두 들어간 8자 이상 비밀번호를 입력하세요."
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            isError={!!errors.password}
+          />
+          {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
+        </div>
+
+        <div>
+          <InputField
+            label="비밀번호 확인"
+            name="passwordConfirm"
+            placeholder="비밀번호를 한 번 더 입력하세요."
+            type="password"
+            value={formData.passwordConfirm}
+            onChange={handleChange}
+            isError={!!errors.passwordConfirm}
+          />
+          {errors.passwordConfirm && (
+            <p className="mt-1 text-sm text-red-500">{errors.passwordConfirm}</p>
+          )}
+        </div>
+
         <div className="mt-[30px] flex w-full justify-center gap-[31.5px]">
           <Button
             type="button"
             variant="primary"
             size="md"
-            onClick={handlePrevStep}
+            onClick={() => navigate('/companysignup')}
             className="h-[70px] w-[252px] rounded-[10px] border-[#63656C] px-[50px] py-[17px]"
           >
             이전 단계
@@ -133,10 +196,10 @@ export default function CompanyRegisterSecondPage() {
             type="submit"
             variant={isFormValid ? 'active' : 'secondary'}
             size="md"
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             className="h-[70px] w-[252px] rounded-[10px] px-[50px] py-[17px] text-black"
           >
-            다음
+            {isLoading ? '가입 중...' : '가입 완료'}
           </Button>
         </div>
       </form>

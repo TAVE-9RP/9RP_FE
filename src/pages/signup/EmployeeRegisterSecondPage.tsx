@@ -1,28 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/signup/Header';
 import Button from '@/components/common/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { getCompanies } from '@/apis/apiConnection';
+import type { Company } from '@/types/company';
 
 import searchIcon from '@/assets/search.png';
 import checkIcon from '@/assets/checkicon.png';
 import companyImage from '@/assets/companyimage.png';
 
-const MOCK_COMPANIES = [
-  { id: 1, name: '카피바라 회사' },
-  { id: 2, name: '카피바라바라 회사' },
-  { id: 3, name: '박카스' },
-  { id: 4, name: '구알피' },
-  { id: 5, name: '타코에 고수 추가' },
-];
-
 export default function EmployeeRegisterSecondPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 이전 페이지에서 전달받은 데이터
+  const { userId, email, password } = (location.state as {
+    userId?: string;
+    email?: string;
+    password?: string;
+  }) || {};
+
+  useEffect(() => {
+    console.log('=== EmployeeRegisterSecondPage에서 받은 데이터 ===');
+    console.log('userId:', userId);
+    console.log('email:', email);
+    console.log('password:', password);
+  }, [userId, email, password]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredCompanies = searchTerm
-    ? MOCK_COMPANIES.filter((company) => company.name.includes(searchTerm))
-    : [];
+  // 검색어가 변경될 때마다 API 호출
+  useEffect(() => {
+    const searchCompanies = async () => {
+      if (searchTerm.trim() === '') {
+        setCompanies([]);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const response = await getCompanies(searchTerm);
+        console.log('회사 검색 결과:', response);
+        if (response.result) {
+          setCompanies(response.result);
+        } else {
+          setCompanies([]);
+        }
+      } catch (error) {
+        console.error('회사 검색 실패:', error);
+        setCompanies([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // 디바운싱: 300ms 후에 검색
+    const timeoutId = setTimeout(() => {
+      searchCompanies();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   return (
     <div className="mx-auto flex w-full max-w-[535px] flex-col items-center">
@@ -43,7 +84,11 @@ export default function EmployeeRegisterSecondPage() {
       </div>
 
       <div className="mt-[30px] flex w-full flex-col">
-        {filteredCompanies.map((company) => {
+        {isLoading && <p className="py-4 text-center text-gray-500">검색 중...</p>}
+        {!isLoading && companies.length === 0 && searchTerm && (
+          <p className="py-4 text-center text-gray-500">검색 결과가 없습니다.</p>
+        )}
+        {companies.map((company) => {
           const isSelected = selectedCompanyId === company.id;
           return (
             <div
@@ -89,11 +134,14 @@ export default function EmployeeRegisterSecondPage() {
             type="button"
             variant="active"
             onClick={() => {
-              const selectedCompany = MOCK_COMPANIES.find((c) => c.id === selectedCompanyId);
+              const selectedCompany = companies.find((c) => c.id === selectedCompanyId);
               navigate('/employeesignup/step4', {
                 state: {
                   companyId: selectedCompanyId,
                   companyName: selectedCompany?.name,
+                  userId,
+                  email,
+                  password,
                 },
               });
             }}
