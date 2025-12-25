@@ -4,7 +4,7 @@ import Header from '@/components/signup/Header';
 import Button from '@/components/common/Button';
 import { useNavigate } from 'react-router-dom';
 
-export default function CompanyRegisterPage() {
+export default function CompanyRegisterSecondPage() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({

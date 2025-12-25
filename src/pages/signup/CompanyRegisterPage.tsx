@@ -5,7 +5,7 @@ import Button from '@/components/common/Button';
 import addCircle from '@/assets/add-circle.png';
 import { useNavigate } from 'react-router-dom';
 
-export default function CompanyRegisterSecondPage() {
+export default function CompanyRegisterPage() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
