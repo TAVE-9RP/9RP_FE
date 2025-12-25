@@ -34,8 +34,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="signup" element={<SignupStartPage />} />
-        <Route path="companysignup" element={<CompanyRegisterPage />} />
-        <Route path="companysignup/step2" element={<CompanyRegisterSecondPage />} />
+        <Route path="companysignup" element={<CompanyRegisterSecondPage />} />
+        <Route path="companysignup/step2" element={<CompanyRegisterPage />} />
         <Route path="employeesignup" element={<EmployeeRegisterPage />} />
         <Route path="employeesignup/step2" element={<EmployeeRegisterSecondPage />} />
         <Route path="employeesignup/step4" element={<EmployeeRegisterFourthPage />} />

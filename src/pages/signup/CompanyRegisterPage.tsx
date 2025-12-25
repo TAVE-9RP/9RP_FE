@@ -76,7 +76,8 @@ export default function CompanyRegisterPage() {
     }
 
     console.log('폼 데이터 제출:', formData);
-    navigate('/companysignup/step2');
+    // 회원가입 성공 시, 로그인 페이지로 이동
+    navigate('/login');
   };
 
   return (
@@ -139,7 +140,7 @@ export default function CompanyRegisterPage() {
             type="button"
             variant="primary"
             size="md"
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate('/companysignup')}
             className="h-[70px] w-[252px] rounded-[10px] border-[#63656C] px-[50px] py-[17px]"
           >
             이전 단계
@@ -152,7 +153,7 @@ export default function CompanyRegisterPage() {
             disabled={!isFormValid}
             className="h-[70px] w-[252px] rounded-[10px] px-[50px] py-[17px] text-black"
           >
-            다음
+            가입 완료
           </Button>
         </div>
       </form>

@@ -48,10 +48,11 @@ export default function CompanyRegisterSecondPage() {
     }
 
     console.log('회사 정보 입력 완료:', formData);
+    navigate('/companysignup/step2');
   };
 
   const handlePrevStep = () => {
-    navigate('/companysignup');
+    navigate('/signup');
   };
 
   return (
