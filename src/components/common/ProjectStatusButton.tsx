@@ -42,7 +42,7 @@ export default function ProjectStatusButton({
       className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}
     >
       <span className="text-[15px] font-bold leading-normal">{label}</span>
-      <span className="text-[15px] font-bold leading-normal">({count})</span>
+      <span className="text-[15px] font-bold leading-normal">{count}</span>
     </button>
   );
 }

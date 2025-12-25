@@ -83,12 +83,12 @@ export default function TaskListTable({
       <table className="min-w-full divide-y divide-greyColor-grey200">
         <thead className="bg-subColor-orange050">
           <tr>
-            <th className={`${tableHeaderClasses} text-left`}>프로젝트 넘버</th>
-            <th className={`${tableHeaderClasses} text-left`}>{taskLabel} 업무명</th>
-            <th className={`${tableHeaderClasses} text-left`}>{taskLabel} 품목</th>
-            <th className={`${tableHeaderClasses} text-left`}>위치</th>
-            <th className={`${tableHeaderClasses} text-left`}>요청일</th>
-            <th className={`${tableHeaderClasses} text-left`}>담당자</th>
+            <th className={`${tableHeaderClasses} text-center`}>프로젝트 넘버</th>
+            <th className={`${tableHeaderClasses} text-center`}>{taskLabel} 업무명</th>
+            <th className={`${tableHeaderClasses} text-center`}>{taskLabel} 품목</th>
+            <th className={`${tableHeaderClasses} text-center`}>위치</th>
+            <th className={`${tableHeaderClasses} text-center`}>요청일</th>
+            <th className={`${tableHeaderClasses} text-center`}>담당자</th>
             <th className={`${tableHeaderClasses} border-r-0 text-center`}>진행 상태</th>
           </tr>
         </thead>
