@@ -3,7 +3,7 @@ import Header from '@/components/signup/Header';
 import { InputField } from '@/components/signup/InputField';
 import Button from '@/components/common/Button';
 import { useNavigate } from 'react-router-dom';
-import { postLogin } from '@/apis/member';
+import { postLogin } from '@/apis/apiConnection';
 
 export default function LoginPage() {
   const navigate = useNavigate();

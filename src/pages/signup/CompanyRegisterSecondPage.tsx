@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { InputField } from '@/components/signup/InputField';
 import Header from '@/components/signup/Header';
 import Button from '@/components/common/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function CompanyRegisterSecondPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 이전 페이지에서 전달받은 companyId
+  const companyId = location.state?.companyId as number | undefined;
 
   const [formData, setFormData] = useState({
     userId: '',

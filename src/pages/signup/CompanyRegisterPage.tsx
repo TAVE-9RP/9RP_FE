@@ -4,6 +4,7 @@ import Header from '@/components/signup/Header';
 import Button from '@/components/common/Button';
 import addCircle from '@/assets/add-circle.png';
 import { useNavigate } from 'react-router-dom';
+import { postCompany } from '@/apis/apiConnection';
 
 export default function CompanyRegisterPage() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function CompanyRegisterPage() {
   });
 
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -39,7 +41,7 @@ export default function CompanyRegisterPage() {
     setIsFormValid(isValid);
   }, [formData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isFormValid) {
@@ -47,8 +49,34 @@ export default function CompanyRegisterPage() {
       return;
     }
 
-    console.log('회사 정보 입력 완료:', formData);
-    navigate('/companysignup/step2');
+    setIsLoading(true);
+    try {
+      // 이미지 경로는 임시로 빈 문자열 또는 실제 업로드 후 받은 URL 사용
+      const response = await postCompany({
+        name: formData.companyName,
+        industryType: formData.businessType,
+        description: formData.companyDescription || '',
+        imagePath: formData.companyLogo ? URL.createObjectURL(formData.companyLogo) : '',
+      });
+
+      console.log('회사 등록 성공:', response);
+      
+      if (response.result?.companyId) {
+        console.log('companyId:', response.result.companyId);
+        // companyId를 다음 페이지로 전달
+        navigate('/companysignup/step2', {
+          state: {
+            companyId: response.result.companyId,
+          },
+        });
+      }
+    } catch (error: any) {
+      console.error('회사 등록 실패:', error);
+      const errorMessage = error?.response?.data?.message || '회사 등록에 실패했습니다.';
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePrevStep = () => {
@@ -134,10 +162,10 @@ export default function CompanyRegisterPage() {
             type="submit"
             variant={isFormValid ? 'active' : 'secondary'}
             size="md"
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             className="h-[70px] w-[252px] rounded-[10px] px-[50px] py-[17px] text-black"
           >
-            다음
+            {isLoading ? '등록 중...' : '다음'}
           </Button>
         </div>
       </form>
