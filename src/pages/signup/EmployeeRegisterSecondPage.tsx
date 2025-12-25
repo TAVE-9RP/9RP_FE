@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/signup/Header';
 import Button from '@/components/common/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import searchIcon from '@/assets/search.png';
 import checkIcon from '@/assets/checkicon.png';
@@ -17,6 +17,22 @@ const MOCK_COMPANIES = [
 
 export default function EmployeeRegisterSecondPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 이전 페이지에서 전달받은 데이터
+  const { userId, email, password } = (location.state as {
+    userId?: string;
+    email?: string;
+    password?: string;
+  }) || {};
+
+  useEffect(() => {
+    console.log('=== EmployeeRegisterSecondPage에서 받은 데이터 ===');
+    console.log('userId:', userId);
+    console.log('email:', email);
+    console.log('password:', password);
+  }, [userId, email, password]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
 

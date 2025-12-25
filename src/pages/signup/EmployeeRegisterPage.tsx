@@ -76,7 +76,13 @@ export default function EmployeeRegisterPage() {
     }
 
     console.log('폼 데이터 제출:', formData);
-    navigate('/employeesignup/step2');
+    navigate('/employeesignup/step2', {
+      state: {
+        userId: formData.userId,
+        email: formData.email,
+        password: formData.password,
+      },
+    });
   };
 
   return (
